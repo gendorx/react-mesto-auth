@@ -1,0 +1,10 @@
+.profile__heading-container {
+    display: flex;
+}
+
+@media screen and (max-width: 879px) {
+    .profile__heading-container {
+        padding-top: 26px;
+        padding-left: 28px;
+    }
+}

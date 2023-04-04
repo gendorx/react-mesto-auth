@@ -1,0 +1,7 @@
+.profile__photo {
+  border-radius: inherit;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

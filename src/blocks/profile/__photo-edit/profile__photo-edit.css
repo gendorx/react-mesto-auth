@@ -1,0 +1,19 @@
+.profile__photo-edit {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  border-radius: inherit;
+  height: 100%;
+  width: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 26px 26px;
+  background-color: rgba(0, 0, 0, 0.8);
+  background-image: url("../../../images/icon-edit.svg");
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+
+.profile__photo-container:hover .profile__photo-edit {
+  opacity: 1;
+}

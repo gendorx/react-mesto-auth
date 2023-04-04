@@ -1,0 +1,7 @@
+.root {
+    background-color: #000;
+    color: #fff;
+    text-rendering: optimizeLegibility;
+    font-family: "Inter", Arial, sans-serif;
+    font-style: normal;
+}

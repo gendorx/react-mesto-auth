@@ -1,0 +1,12 @@
+.element {
+    background-color: #fff;
+    border-radius: 10px;
+    box-sizing: border-box;
+    max-height: 361px;
+    position: relative;
+    transition: .3s ease;
+}
+
+.element:hover {
+    transform: scale(1.03);
+}

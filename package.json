@@ -1,6 +1,6 @@
 {
-  "name": "mesto-react",
-  "homepage": "https://gendorx.github.io/mesto-react",
+  "name": "react-mesto-auth",
+  "homepage": "https://gendorx.github.io/react-mesto-auth",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

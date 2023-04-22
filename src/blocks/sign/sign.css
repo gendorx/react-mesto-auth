@@ -1,0 +1,9 @@
+.sign {
+  padding: 60px 0 112px;
+}
+
+@media screen and (max-width: 879px) {
+  .sign {
+    padding: 40px 0;
+  }
+}

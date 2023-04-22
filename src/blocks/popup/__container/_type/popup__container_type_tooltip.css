@@ -1,0 +1,11 @@
+.popup__container_type_tooltip {
+  padding: 60px 36px;
+}
+
+@media screen and (max-width: 879px) {
+  .popup__container_type_tooltip {
+    padding: 50px 18px;
+    max-width: 280px;
+    max-height: 308px;
+  }
+}

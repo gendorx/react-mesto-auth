@@ -1,0 +1,13 @@
+.sign__aside {
+  margin: 15px 0 0;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 17px;
+  text-align: center;
+}
+
+@media screen and (max-width: 879px) {
+  .sign__aside {
+    margin-top: 20px;
+  }
+}

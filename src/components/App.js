@@ -1,7 +1,9 @@
-import React from "react";
-import { api } from "../utils/constants";
+import { Component } from "react";
+import { api, auth } from "../utils/constants";
 import { handleApiResponse } from "../utils/utils";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
+import { Route, Routes } from "react-router";
+import ProtectedRoute from "./ProtectedRoute";
 
 import Header from "./Header";
 import Main from "./Main";
@@ -11,6 +13,9 @@ import EditProfilePopup from "./PopupEditProfile";
 import EditAvatarProfile from "./EditAvatarProfile";
 import AddPlacePopup from "./AddPlacePopup";
 import ConfirmPopup from "./ConfirmPopup";
+import InfoTooltipPopup from "./InfoTooltip";
+import Login from "./Login";
+import Register from "./Register";
 
 const popupsClosedAll = {
   isEditProfilePopupOpen: false,
@@ -18,9 +23,28 @@ const popupsClosedAll = {
   isEditAvatarPopupOpen: false,
   isImagePopupOpened: false,
   isConfirmPopup: false,
+  isInfoTooltipPopup: false,
 };
 
-export default class App extends React.Component {
+const methodsBind = [
+  "handleEditAvatarClick",
+  "handleAddPlaceClick",
+  "handleEditProfileClick",
+  "handleCardClick",
+  "handleUpdateUser",
+  "handleUpdateAvatar",
+  "handleCardLike",
+  "handleCardDelete",
+  "handleAddPlaceSubmit",
+  "handleCardDeleteReq",
+  "onLogin",
+  "closeAllPopups",
+  "onRegister",
+  "onSignOut",
+  "toogleMobileMenu",
+];
+
+export default class App extends Component {
   constructor(props) {
     super(props);
 
@@ -29,21 +53,16 @@ export default class App extends React.Component {
       isLoadingData: false,
       selectedCard: {},
       currentUser: {},
+      userEmail: "",
       cards: [],
+      isSuccess: false,
+      isLogged: !!this.getToken(),
+      isMobileMenuOpened: false,
     };
 
-    this.handleEditAvatarClick = this.handleEditAvatarClick.bind(this);
-    this.handleAddPlaceClick = this.handleAddPlaceClick.bind(this);
-    this.handleEditProfileClick = this.handleEditProfileClick.bind(this);
-    this.handleCardClick = this.handleCardClick.bind(this);
-    this.handleUpdateUser = this.handleUpdateUser.bind(this);
-    this.handleUpdateAvatar = this.handleUpdateAvatar.bind(this);
-    this.handleCardLike = this.handleCardLike.bind(this);
-    this.handleCardDelete = this.handleCardDelete.bind(this);
-    this.handleAddPlaceSubmit = this.handleAddPlaceSubmit.bind(this);
-    this.handleCardDeleteReq = this.handleCardDeleteReq.bind(this);
-
-    this.closeAllPopups = this.closeAllPopups.bind(this);
+    methodsBind.forEach((m) => {
+      this[m] = this[m].bind(this);
+    });
   }
 
   handleEditAvatarClick() {
@@ -76,7 +95,7 @@ export default class App extends React.Component {
     const newState = { isLoadingData: false, ...popupsClosedAll };
 
     try {
-      newState.currentUser = await api.setUserInfo(info);
+      newState.currentUser = await api.setUserInfo(info, this.getToken());
     } catch (err) {
       handleApiResponse(err);
     } finally {
@@ -89,7 +108,7 @@ export default class App extends React.Component {
     const newState = { isLoadingData: false, ...popupsClosedAll };
 
     try {
-      newState.currentUser = await api.setProfilePhoto(avatar);
+      newState.currentUser = await api.setProfilePhoto(avatar, this.getToken());
     } catch (err) {
       handleApiResponse(err);
     } finally {
@@ -102,7 +121,10 @@ export default class App extends React.Component {
     const newState = { isLoadingData: false, ...popupsClosedAll };
 
     try {
-      newState.cards = [await api.addCard(item), ...this.state.cards];
+      newState.cards = [
+        await api.addCard(item, this.getToken()),
+        ...this.state.cards,
+      ];
     } catch (err) {
       handleApiResponse(err);
     } finally {
@@ -125,9 +147,9 @@ export default class App extends React.Component {
       );
 
       if (isLiked) {
-        response = await api.removeLikeCard(card._id);
+        response = await api.removeLikeCard(card._id, this.getToken());
       } else {
-        response = await api.addLikeCard(card._id);
+        response = await api.addLikeCard(card._id, this.getToken());
       }
 
       this.setNewState({
@@ -152,13 +174,56 @@ export default class App extends React.Component {
     const newState = { isConfirmPopup: false, selectedCard: {} };
 
     try {
-      await api.removeCard(card._id);
+      await api.removeCard(card._id, this.getToken());
       newState.cards = this.state.cards.filter((a) => a._id !== card._id);
     } catch (err) {
       handleApiResponse(err);
     } finally {
       this.setNewState(newState);
     }
+  }
+
+  getToken() {
+    return localStorage.getItem("jwt");
+  }
+
+  setToken(token) {
+    return localStorage.setItem("jwt", token);
+  }
+
+  async onLogin(ctx) {
+    try {
+      const { token } = await auth.authorize(ctx);
+      this.setToken(token);
+      this.setNewState({
+        isLogged: true,
+        userEmail: ctx.email,
+      });
+    } catch (err) {
+      handleApiResponse(err);
+    }
+  }
+
+  async onRegister(ctx) {
+    const newState = { isInfoTooltipPopup: true };
+
+    try {
+      await auth.register(ctx);
+      newState["isSuccess"] = true;
+    } catch (err) {
+      newState["isSuccess"] = false;
+    } finally {
+      return this.setNewState(newState);
+    }
+  }
+
+  onSignOut() {
+    this.setNewState({
+      isLogged: false,
+      userEmail: "",
+    });
+
+    localStorage.removeItem("jwt");
   }
 
   closeAllPopups() {
@@ -168,7 +233,43 @@ export default class App extends React.Component {
     });
   }
 
-  async componentDidMount() {
+  toogleMobileMenu() {
+    return this.setNewState({
+      isMobileMenuOpened: !this.state.isMobileMenuOpened,
+    });
+  }
+
+  async checkToken() {
+    const token = this.getToken();
+    if (!token) return;
+
+    try {
+      const ctx = await auth.checkToken(token);
+
+      if (!ctx) {
+        return this.setNewState({
+          isLogged: false,
+        });
+      }
+
+      this.setNewState({
+        isLogged: true,
+        userEmail: ctx.data.email,
+      });
+
+      return true;
+    } catch (err) {
+      handleApiResponse(err);
+    }
+  }
+
+  componentDidUpdate(_, prevState) {
+    if (prevState.isLogged !== this.state.isLogged && !prevState.isLogged) {
+      this.getServerData();
+    }
+  }
+
+  async getServerData() {
     try {
       const [userData, cards] = await Promise.all([
         api.getProfileInfo(),
@@ -181,20 +282,57 @@ export default class App extends React.Component {
     }
   }
 
+  async componentDidMount() {
+    const isCorrect = await this.checkToken();
+    if (!isCorrect) return;
+    await this.getServerData();
+  }
+
   render() {
     return (
       <CurrentUserContext.Provider value={this.state.currentUser}>
-        <Header />
-        <Main
-          onEditProfile={this.handleEditProfileClick}
-          onAddPlace={this.handleAddPlaceClick}
-          onEditAvatar={this.handleEditAvatarClick}
-          onCardClick={this.handleCardClick}
-          onCardLike={this.handleCardLike}
-          onCardDelete={this.handleCardDeleteReq}
-          cards={this.state.cards}
+        <Header
+          userEmail={this.state.userEmail}
+          onSignOut={this.onSignOut}
+          isMobileOpen={this.state.isMobileMenuOpened}
+          toogleMobileMenu={this.toogleMobileMenu}
         />
-        <Footer />
+
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute
+                isLogged={this.state.isLogged}
+                component={Main}
+                onEditProfile={this.handleEditProfileClick}
+                onAddPlace={this.handleAddPlaceClick}
+                onEditAvatar={this.handleEditAvatarClick}
+                onCardClick={this.handleCardClick}
+                onCardLike={this.handleCardLike}
+                onCardDelete={this.handleCardDeleteReq}
+                cards={this.state.cards}
+              />
+            }
+          />
+
+          <Route
+            path="/sign-in"
+            element={
+              <Login onSubmit={this.onLogin} isLogged={this.state.isLogged} />
+            }
+          />
+          <Route
+            path="/sign-up"
+            element={
+              <Register
+                onSubmit={this.onRegister}
+                isLogged={this.state.isLogged}
+              />
+            }
+          />
+        </Routes>
+        {this.state.isLogged && <Footer />}
 
         <EditProfilePopup
           isOpen={this.state.isEditProfilePopupOpen}
@@ -227,6 +365,14 @@ export default class App extends React.Component {
           isOpen={this.state.isImagePopupOpened}
           onClose={this.closeAllPopups}
           card={this.state.selectedCard}
+        />
+
+        <InfoTooltipPopup
+          isOpen={this.state.isInfoTooltipPopup}
+          onClose={this.closeAllPopups}
+          isSuccess={this.state.isSuccess}
+          successText="Вы успешно зарегистрировались!"
+          failText="Что-то пошло не так! Попробуйте ещё раз."
         />
       </CurrentUserContext.Provider>
     );

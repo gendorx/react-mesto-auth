@@ -1,0 +1,9 @@
+.sign__aside-link {
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+    color: #fff;
+}
+
+.sign__aside-link:hover {
+    opacity: 0.6;
+}

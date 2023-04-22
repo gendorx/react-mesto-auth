@@ -1,0 +1,30 @@
+.sign__submit {
+  color: #000000;
+  background: #ffffff;
+  border-radius: 2px;
+  border: none;
+  padding: 14px 0;
+  margin-top: 216px;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 22px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  max-height: 50px;
+  height: 100%;
+  max-width: 358px;
+}
+
+.sign__submit:hover {
+  opacity: 0.85;
+}
+
+@media screen and (max-width: 879px) {
+  .sign__submit {
+    max-width: 260px;
+    max-height: 46px;
+    font-size: 16px;
+    line-height: 19px;
+    margin-top: 173px;
+  }
+}

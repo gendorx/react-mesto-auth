@@ -1,0 +1,13 @@
+.header__burger-button {
+    padding: 12px 12px;
+    cursor: pointer;
+    display: none;
+    background-size: 100%;
+    background-repeat: no-repeat;
+}
+
+@media screen and (max-width: 879px) {
+    .header__burger-button  {
+        display: block;
+    }
+}

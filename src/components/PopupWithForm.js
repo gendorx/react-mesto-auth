@@ -1,49 +1,27 @@
-import React from "react";
+import Popup from "./Popup";
 
-export default class PopupWithForm extends React.Component {
-  constructor(props) {
-    super(props);
+export default function PopupWithForm(props) {
+  const buttonText = props.buttonText || "Сохранить";
 
-    this.handleEscClose = this.handleEscClose.bind(this);
-  }
-
-  handleEscClose(evt) {
-    if (evt.key === "Escape") return this.props.onClose();
-  }
-
-  render() {
-    const buttonText = this.props.buttonText || "Сохранить";
-
-    return (
-      <div
-        className={`popup popup_type_${this.props.name} ${
-          this.props.isOpen && "popup_opened"
-        }`}
+  return (
+    <Popup name={props.name} onClose={props.onClose} isOpen={props.isOpen}>
+      <h2 className="popup__title">{props.title}</h2>
+      <form
+        className="form"
+        name={`form_${props.name}`}
+        onSubmit={props.onSubmit}
       >
-        <div className="popup__container">
-          <button
-            className="popup__close button-icon button-icon_type_close"
-            onClick={this.props.onClose}
-          ></button>
-          <h2 className="popup__title">{this.props.title}</h2>
-          <form
-            className="form"
-            name={`form_${this.props.name}`}
-            onSubmit={this.props.onSubmit}
-          >
-            {this.props.children}
-            <button
-              className={`popup__submit ${
-                this.props.isLoadingData && "popup__submit_disabled"
-              }`}
-              type="submit"
-              disabled={this.props.isLoadingData}
-            >
-              {buttonText}
-            </button>
-          </form>
-        </div>
-      </div>
-    );
-  }
+        {props.children}
+        <button
+          className={`popup__submit ${
+            props.isLoadingData && "popup__submit_disabled"
+          }`}
+          type="submit"
+          disabled={props.isLoadingData}
+        >
+          {buttonText}
+        </button>
+      </form>
+    </Popup>
+  );
 }

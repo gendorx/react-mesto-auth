@@ -1,0 +1,12 @@
+.header__user-info {
+  display: flex;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 22px;
+}
+
+@media screen and (max-width: 879px) {
+  .header__user-info {
+    display: none;
+  }
+}

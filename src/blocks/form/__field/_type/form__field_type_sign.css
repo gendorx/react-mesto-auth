@@ -1,0 +1,13 @@
+.form__field_type_sign {
+  margin-top: 30px;
+}
+
+.form__field_type_sign:first-of-type {
+  margin-top: 50px;
+}
+
+@media screen and (max-width: 879px) {
+  .form__field_type_sign:first-of-type {
+    margin-top: 40px;
+  }
+}

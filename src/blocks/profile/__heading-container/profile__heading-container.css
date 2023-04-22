@@ -6,5 +6,6 @@
     .profile__heading-container {
         padding-top: 26px;
         padding-left: 28px;
+        justify-content: center;
     }
 }

@@ -17,4 +17,4 @@
 - Запустить сайт на Node JS :)
 
 ### Ссылка на сайт
-https://gendorx.github.io/mesto-react/
+https://gendorx.github.io/react-mesto-auth/

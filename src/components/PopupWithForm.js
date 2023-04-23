@@ -4,7 +4,12 @@ export default function PopupWithForm(props) {
   const buttonText = props.buttonText || "Сохранить";
 
   return (
-    <Popup name={props.name} onClose={props.onClose} isOpen={props.isOpen}>
+    <Popup
+      name={props.name}
+      onClose={props.onClose}
+      isOpen={props.isOpen}
+      container={props.container}
+    >
       <h2 className="popup__title">{props.title}</h2>
       <form
         className="form"

@@ -47,19 +47,17 @@ export default function Main(props) {
         </section>
 
         <section className="elements">
-          <CurrentUserContext.Provider value={currentUser}>
-            {props.cards.length > 0
-              ? props.cards.map((card) => (
-                  <Card
-                    key={card._id}
-                    card={card}
-                    onCardClick={props.onCardClick}
-                    onCardDelete={props.onCardDelete}
-                    onCardLike={props.onCardLike}
-                  />
-                ))
-              : "Немного подождите, пока загрузятся данные..."}
-          </CurrentUserContext.Provider>
+          {props.cards.length > 0
+            ? props.cards.map((card) => (
+                <Card
+                  key={card._id}
+                  card={card}
+                  onCardClick={props.onCardClick}
+                  onCardDelete={props.onCardDelete}
+                  onCardLike={props.onCardLike}
+                />
+              ))
+            : "Немного подождите, пока загрузятся данные..."}
         </section>
       </main>
     </>

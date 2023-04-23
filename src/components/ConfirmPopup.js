@@ -15,6 +15,7 @@ export default function ConfirmPopup(props) {
       isOpen={props.isOpen}
       onClose={props.onClose}
       onSubmit={handleSubmit}
+      container="confirm"
     />
   );
 }

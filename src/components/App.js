@@ -283,9 +283,13 @@ export default class App extends Component {
   }
 
   async componentDidMount() {
-    const isCorrect = await this.checkToken();
-    if (!isCorrect) return;
-    await this.getServerData();
+    try {
+      const isCorrect = await this.checkToken();
+      if (!isCorrect) return;
+      await this.getServerData();
+    } catch (err) {
+      handleApiResponse(err);
+    }
   }
 
   render() {
